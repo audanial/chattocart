@@ -7,7 +7,7 @@ import { useOrders } from "@/hooks/useOrders";
 import { SAMPLE_CHAT } from "@/lib/sampleData";
 
 export default function Home() {
-  const { orders, summary } = useOrders();
+  const { orders, summary, loading, error, parse } = useOrders();
 
   const mainContent =
     orders.length === 0 ? (
@@ -54,7 +54,16 @@ export default function Home() {
     );
 
   return (
-    <DashboardShell leftPanel={<PastePanel defaultValue={SAMPLE_CHAT} />}>
+    <DashboardShell
+      leftPanel={
+        <PastePanel defaultValue={SAMPLE_CHAT} onParse={parse} loading={loading} />
+      }
+    >
+      {error && (
+        <div className="rounded-md border border-destructive/50 bg-destructive/10 px-4 py-2 text-sm text-destructive mb-4">
+          {error}
+        </div>
+      )}
       {mainContent}
     </DashboardShell>
   );

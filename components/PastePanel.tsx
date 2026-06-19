@@ -8,9 +8,10 @@ import { Upload } from "lucide-react";
 interface PastePanelProps {
   defaultValue?: string;
   onParse?: (chatText: string) => void;
+  loading?: boolean;
 }
 
-export function PastePanel({ defaultValue = "", onParse }: PastePanelProps) {
+export function PastePanel({ defaultValue = "", onParse, loading = false }: PastePanelProps) {
   const [chatText, setChatText] = useState(defaultValue);
 
   return (
@@ -30,10 +31,10 @@ export function PastePanel({ defaultValue = "", onParse }: PastePanelProps) {
       />
       <Button
         className="w-full"
-        disabled={!chatText.trim()}
+        disabled={!chatText.trim() || loading}
         onClick={() => onParse?.(chatText)}
       >
-        Parse
+        {loading ? "Parsing chat…" : "Parse"}
       </Button>
     </aside>
   );

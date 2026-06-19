@@ -21,11 +21,27 @@ export function useOrders(): UseOrdersReturn {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  // Stub — wired in Phase 3
-  async function parse(_chatText: string): Promise<void> {
-    void _chatText;
-    void setLoading;
-    void setError;
+  async function parse(chatText: string): Promise<void> {
+    setLoading(true);
+    setError(null);
+    try {
+      const res = await fetch("/api/parse", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ chatText }),
+      });
+      if (!res.ok) {
+        const body = await res.json().catch(() => ({}));
+        throw new Error(body.error ?? `Server error ${res.status}`);
+      }
+      const result = await res.json();
+      setOrders(result.orders);
+      setSummary(result.summary);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Parse failed");
+    } finally {
+      setLoading(false);
+    }
   }
 
   // Stub — wired in Phase 4
