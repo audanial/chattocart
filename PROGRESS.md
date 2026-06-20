@@ -48,3 +48,12 @@
 - Created `components/TopItemsChart.tsx`: Recharts `BarChart` (ResponsiveContainer, 220px height) showing top 5 items by quantity with angled X-axis labels, no tick lines, border-colored grid, and rounded bar corners.
 - Updated `app/page.tsx`: replaced inline order list with `SummaryCards` → `OrdersTable` → `TopItemsChart` layout. Derived values computed via two `useMemo` calls from `orders` state; nothing stored as duplicate state. Old summary header text removed.
 - TypeScript build passes clean (`tsc --noEmit` zero errors).
+
+## 2026-06-20 — Phase 6
+
+### Phase 6: Review flags & edge cases
+- Created `components/ParseWarnings.tsx`: renders a subtle amber strip (`bg-amber-50`, `border-amber-200`, `text-amber-800`) with an Info icon and one `<li>` per warning. Returns `null` when `warnings` is empty so it takes up no space.
+- Updated `app/page.tsx`: destructures `summary` from `useOrders`; renders `<ParseWarnings warnings={summary.parse_warnings ?? []} />` between SummaryCards and OrdersTable.
+- Defensive null guards in `components/OrdersTable.tsx`: `order.items ?? []`, `order.review_reasons ?? []`, and `item.modifiers ?? []` so a malformed AI response that omits these arrays cannot crash the table.
+- `SummaryCards` and `TopItemsChart` were already safe: `computeSummary` always returns numbers, chart guards on empty `items` array.
+- TypeScript build passes clean.

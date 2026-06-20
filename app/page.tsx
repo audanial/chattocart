@@ -7,12 +7,13 @@ import { PastePanel } from "@/components/PastePanel";
 import { SummaryCards } from "@/components/SummaryCards";
 import { OrdersTable } from "@/components/OrdersTable";
 import { TopItemsChart } from "@/components/TopItemsChart";
+import { ParseWarnings } from "@/components/ParseWarnings";
 import { useOrders } from "@/hooks/useOrders";
 import { computeSummary, topItems } from "@/lib/derive";
 import { SAMPLE_CHAT } from "@/lib/sampleData";
 
 export default function Home() {
-  const { orders, loading, error, parse, updateStatus } = useOrders();
+  const { orders, summary, loading, error, parse, updateStatus } = useOrders();
 
   const derivedSummary = useMemo(() => computeSummary(orders), [orders]);
   const chartItems = useMemo(() => topItems(orders, 5), [orders]);
@@ -23,6 +24,7 @@ export default function Home() {
     ) : (
       <div className="space-y-6">
         <SummaryCards summary={derivedSummary} />
+        <ParseWarnings warnings={summary.parse_warnings ?? []} />
         <OrdersTable orders={orders} onStatusChange={updateStatus} />
         <TopItemsChart items={chartItems} />
       </div>

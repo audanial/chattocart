@@ -62,14 +62,14 @@ export function OrdersTable({ orders, onStatusChange }: Props) {
               {/* Items */}
               <TableCell className="align-top whitespace-normal">
                 <ul className="space-y-1">
-                  {order.items.map((item, i) => (
+                  {(order.items ?? []).map((item, i) => (
                     <li key={i} className="text-sm">
                       <span>
                         {item.quantity}× {item.name}
                       </span>
-                      {item.modifiers.length > 0 && (
+                      {(item.modifiers ?? []).length > 0 && (
                         <span className="text-muted-foreground">
-                          {" "}[{item.modifiers.join(", ")}]
+                          {" "}[{(item.modifiers ?? []).join(", ")}]
                         </span>
                       )}
                       {item.line_total != null ? (
@@ -87,9 +87,9 @@ export function OrdersTable({ orders, onStatusChange }: Props) {
                     </li>
                   ))}
                 </ul>
-                {order.review_reasons.length > 0 && (
+                {(order.review_reasons ?? []).length > 0 && (
                   <ul className="mt-2 space-y-0.5">
-                    {order.review_reasons.map((reason, i) => (
+                    {(order.review_reasons ?? []).map((reason, i) => (
                       <li key={i} className="text-xs text-destructive">
                         {reason}
                       </li>
