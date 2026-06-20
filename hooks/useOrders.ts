@@ -44,11 +44,10 @@ export function useOrders(): UseOrdersReturn {
     }
   }
 
-  // Stub — wired in Phase 4
-  function updateStatus(_orderId: string, _status: Status): void {
-    void _orderId;
-    void _status;
-    void setOrders;
+  function updateStatus(orderId: string, status: Status): void {
+    setOrders((prev) =>
+      prev.map((o) => (o.order_id === orderId ? { ...o, status } : o))
+    );
   }
 
   // Stub — wired in Phase 8

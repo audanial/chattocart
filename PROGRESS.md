@@ -32,3 +32,19 @@
 - Removed `{ role: "assistant", content: "{" }` from the messages array in `app/api/parse/route.ts`
 - Removed the `"{" +` reconstruction; `rawText` is now parsed directly from `response.choices[0].message.content`
 - Strengthened `SYSTEM_PROMPT` in `lib/prompt.ts` to compensate: added a bolded CRITICAL OUTPUT RULE at the top and a REMINDER at the bottom, both explicitly requiring the response to start with `{` and end with `}` with nothing before or after
+
+## 2026-06-20 — Phase 4 + Phase 5
+
+### Phase 4: Orders table & status workflow
+- Created `components/StatusBadge.tsx`: clickable badge cycling new (blue) → preparing (amber) → done (green) → new. Calls `onChange` with the next status on click.
+- Created `components/FulfillmentIcon.tsx`: renders a lucide-react icon (ShoppingBag / Truck / Utensils / HelpCircle) with a short text label for pickup, delivery, dine_in, unknown.
+- Created `components/OrdersTable.tsx`: shadcn `Table` with columns Customer/ID, Items, Total, Status. Flagged rows (`needs_review: true`) get amber-tinted background, ⚠ icon next to customer name, and `review_reasons` printed in red below the item list. Null `line_total` renders as `—`; resolved totals as `RM X.XX`. Notes appear in muted italic under each item line.
+- Wired `useOrders.updateStatus(orderId, status)`: maps over orders state and replaces the matching order's status in place; derived counts update automatically via `useMemo` in `page.tsx`.
+- Installed `recharts` package.
+
+### Phase 5: Charts & summary cards
+- Created `lib/derive.ts`: pure helpers `computeSummary(orders)` returning `{ total_orders, total_revenue, pending_count, flagged_count }` (revenue sums only non-null order_totals) and `topItems(orders, limit)` returning top N items by total quantity across all orders, sorted descending.
+- Created `components/SummaryCards.tsx`: four cards (Orders today, Revenue, Pending, Needs review) derived from `computeSummary` via `useMemo` in `page.tsx`. Revenue formatted as `RM X.XX`.
+- Created `components/TopItemsChart.tsx`: Recharts `BarChart` (ResponsiveContainer, 220px height) showing top 5 items by quantity with angled X-axis labels, no tick lines, border-colored grid, and rounded bar corners.
+- Updated `app/page.tsx`: replaced inline order list with `SummaryCards` → `OrdersTable` → `TopItemsChart` layout. Derived values computed via two `useMemo` calls from `orders` state; nothing stored as duplicate state. Old summary header text removed.
+- TypeScript build passes clean (`tsc --noEmit` zero errors).
