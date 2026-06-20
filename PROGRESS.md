@@ -57,3 +57,12 @@
 - Defensive null guards in `components/OrdersTable.tsx`: `order.items ?? []`, `order.review_reasons ?? []`, and `item.modifiers ?? []` so a malformed AI response that omits these arrays cannot crash the table.
 - `SummaryCards` and `TopItemsChart` were already safe: `computeSummary` always returns numbers, chart guards on empty `items` array.
 - TypeScript build passes clean.
+
+## 2026-06-20 — Phase 7
+
+### Phase 7: localStorage persistence
+- Created `lib/storage.ts`: `loadOrders()` parses `chattocart_result` from localStorage (returns `null` on missing key, parse error, or SSR); `saveOrders(result)` serializes the full `ParseResult` to the same key. Both functions guard on `typeof window === "undefined"` so they are safe in Next.js SSR contexts and silently swallow quota/private-mode errors.
+- Updated `hooks/useOrders.ts`:
+  - Added `useEffect(() => { const stored = loadOrders(); if (stored) { setOrders(...); setSummary(...); } }, [])` — runs client-only after first render, so the server and client initial render both use `SAMPLE_RESULT` (no hydration mismatch). If localStorage holds a prior result it replaces the sample data immediately after mount.
+  - `parse()` success path calls `saveOrders({ orders, summary })` with the fresh API result before returning.
+  - `updateStatus()` computes the next orders array inside the `setOrders` functional updater, then calls `saveOrders` with it synchronously before returning — guarantees the persisted state matches the exact value React will commit.

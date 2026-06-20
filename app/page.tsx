@@ -13,7 +13,7 @@ import { computeSummary, topItems } from "@/lib/derive";
 import { SAMPLE_CHAT } from "@/lib/sampleData";
 
 export default function Home() {
-  const { orders, summary, loading, error, parse, updateStatus } = useOrders();
+  const { orders, summary, persistedChatText, loading, error, parse, updateStatus } = useOrders();
 
   const derivedSummary = useMemo(() => computeSummary(orders), [orders]);
   const chartItems = useMemo(() => topItems(orders, 5), [orders]);
@@ -33,7 +33,12 @@ export default function Home() {
   return (
     <DashboardShell
       leftPanel={
-        <PastePanel defaultValue={SAMPLE_CHAT} onParse={parse} loading={loading} />
+        <PastePanel
+          key={persistedChatText !== null ? "hydrated" : "sample"}
+          defaultValue={persistedChatText ?? SAMPLE_CHAT}
+          onParse={parse}
+          loading={loading}
+        />
       }
     >
       {error && (
