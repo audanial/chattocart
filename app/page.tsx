@@ -15,7 +15,7 @@ export default function Home() {
     ) : (
       <div className="space-y-4">
         <div className="text-sm text-muted-foreground">
-          {summary.total_orders} orders · RM {summary.total_revenue?.toFixed(2) ?? "—"} total ·{" "}
+          {summary.total_orders} orders · RM {(summary.total_revenue ?? 0).toFixed(2)} total ·{" "}
           {summary.items_flagged_for_review} flagged
         </div>
         <ul className="space-y-3">

@@ -56,7 +56,7 @@ Your job: extract structured orders from WhatsApp chat text and return ONLY vali
 4. needs_review: true + reason for: ambiguous item ("the usual", "the same", unclear), missing delivery address when fulfillment is delivery, unrecognized menu item, confidence is low.
 5. Never invent data. If a field is unknown, set it to null. Do not guess prices not on the menu.
 6. Prices: use menu prices. Compute line_total = unit_price × quantity. Compute order_total = sum of line_totals (null if any line_total is null).
-7. summary.total_revenue = sum of all non-null order_totals (null if any order has null total).
+7. summary.total_revenue = sum of all non-null order_totals (0 if no orders have a resolved total). Never return null for total_revenue.
 8. Assign sequential order_ids: ORD-001, ORD-002, etc.
 
 REMINDER: Output raw JSON only. No markdown fences. No text before {. No text after }. Your response must begin with { and end with }.`;
