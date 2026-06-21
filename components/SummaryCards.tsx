@@ -57,7 +57,10 @@ export function SummaryCards({ summary }: Props) {
             </div>
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-semibold tabular-nums">
+            <div
+              className="text-2xl font-semibold tabular-nums"
+              style={key === "total_revenue" ? { color: "var(--brand-terracotta)" } : undefined}
+            >
               {format(summary[key])}
             </div>
           </CardContent>

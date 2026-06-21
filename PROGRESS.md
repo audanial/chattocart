@@ -66,3 +66,27 @@
   - Added `useEffect(() => { const stored = loadOrders(); if (stored) { setOrders(...); setSummary(...); } }, [])` — runs client-only after first render, so the server and client initial render both use `SAMPLE_RESULT` (no hydration mismatch). If localStorage holds a prior result it replaces the sample data immediately after mount.
   - `parse()` success path calls `saveOrders({ orders, summary })` with the fresh API result before returning.
   - `updateStatus()` computes the next orders array inside the `setOrders` functional updater, then calls `saveOrders` with it synchronously before returning — guarantees the persisted state matches the exact value React will commit.
+
+## 2026-06-21 — Brand theme (Makcik Barista)
+
+### Visual theme pass
+- Added `Playfair Display` via `next/font/google` as `--font-playfair`; wired to `--font-heading` in `@theme inline` so the `font-heading` Tailwind utility activates it.
+- Added three CSS custom properties in `:root` as the single source of truth for brand colors:
+  - `--brand-green: #1F3A1A` (deep forest green)
+  - `--brand-terracotta: #C8732F` (warm terracotta)
+  - `--brand-cream: #F5F0E6` (warm cream)
+- Updated shadcn tokens: `--background` → cream, `--primary` → forest green, `--primary-foreground` → cream off-white. All other semantic tokens (status badge blue/amber/green, destructive red, review amber) left untouched.
+- `AppHeader`: forest green background via `var(--brand-green)`, cream text, "ChatToCart" title uses `font-heading` (Playfair Display).
+- `PastePanel` Parse button: terracotta via `var(--brand-terracotta)` inline style; disabled state falls back to shadcn's built-in `opacity-50`.
+- `SummaryCards`: Revenue value rendered in terracotta (`var(--brand-terracotta)`); other card values unchanged.
+- `TopItemsChart`: Bar fill changed from `#378ADD` to `var(--brand-terracotta)`; "Top Items" card title uses `font-heading`.
+
+## 2026-06-21 — Upload .txt
+
+### PastePanel file upload
+- Removed `disabled` from the "Upload .txt" button.
+- Added a hidden `<input type="file" accept=".txt,text/plain">` controlled via a `useRef`.
+- Clicking the button calls `.click()` on the hidden input, opening the native OS file picker filtered to `.txt` files.
+- On file selection, uses `file.text()` (browser File API) to read the content and replace the textarea value.
+- Input value is reset after each selection so the same file can be re-uploaded after an error.
+- Read errors surface as an inline `text-destructive` message below the button row; the error clears on the next upload attempt.

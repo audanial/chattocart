@@ -22,7 +22,7 @@ export function TopItemsChart({ items }: Props) {
   return (
     <Card>
       <CardHeader>
-        <CardTitle>Top Items</CardTitle>
+        <CardTitle className="font-heading">Top Items</CardTitle>
       </CardHeader>
       <CardContent>
         <ResponsiveContainer width="100%" height={220}>
@@ -57,7 +57,7 @@ export function TopItemsChart({ items }: Props) {
             />
             <Bar
               dataKey="quantity"
-              fill="#378ADD"
+              fill="var(--brand-terracotta)"
               radius={[4, 4, 0, 0]}
             />
           </BarChart>
