@@ -90,3 +90,31 @@
 - On file selection, uses `file.text()` (browser File API) to read the content and replace the textarea value.
 - Input value is reset after each selection so the same file can be re-uploaded after an error.
 - Read errors surface as an inline `text-destructive` message below the button row; the error clears on the next upload attempt.
+
+## 2026-06-21 — Summary card filters
+
+### Clickable filter cards
+- Added `ActiveFilter = "pending" | "needs_review" | null` type exported from `SummaryCards.tsx`.
+- `SummaryCards` accepts `activeFilter` and `onFilterToggle` props; only the Pending and Needs review cards are filterable — Orders today and Revenue remain pure display.
+- Active card shows a forest-green outline (`var(--brand-green)`), with the label, icon, and value tinted green to match.
+- Filter state lives in `app/page.tsx` as `useState<ActiveFilter>(null)`; toggling the same filter twice clears it back to null.
+- `filteredOrders` computed via `useMemo`: pending filter keeps orders where `status !== "done"`, needs_review filter keeps orders where `needs_review === true`. `OrdersTable` receives `filteredOrders` instead of `orders`.
+- `TopItemsChart` continues to receive data from all orders (unfiltered) so the chart always reflects the full session, not the current filter view.
+
+## 2026-06-21 — Filter-aware summary cards
+
+### Consistent totals under active filters
+- `page.tsx` now computes two summaries: `allOrdersSummary = computeSummary(orders)` (always unfiltered) and, when a filter is active, `computeSummary(filteredOrders)` for the filtered counts.
+- These are merged into `displaySummary` passed to `SummaryCards`: `total_orders` and `total_revenue` come from the filtered computation so they match the visible table rows; `pending_count` and `flagged_count` are always taken from `allOrdersSummary` so the filter toggle buttons always show true totals.
+- No changes to `SummaryCards`, `OrdersTable`, or any other component.
+
+## 2026-06-21 — topItems: exclude UNRESOLVED placeholders
+
+### lib/derive.ts
+- `topItems` now skips any item whose `name` starts with `"UNRESOLVED"` (the sentinel the AI emits for items it cannot identify, e.g. `"UNRESOLVED - 'yang biasa'"`).
+- Chose name-prefix filtering over skipping whole `needs_review` orders: flagged orders can contain legitimate items alongside one unresolved one; excluding the entire order would under-count real menu items.
+
+### Fix: topItems now filters at order level (supersedes above)
+- The `"UNRESOLVED"` prefix check was insufficient — the AI's phrasing varies per parse (e.g. `"unknown - 'yang biasa tu'"`), so string matching is fragile.
+- Changed to skip the entire order when `order.needs_review === true`, which is the reliable signal regardless of how the AI words ambiguous item names.
+- The previous rationale for item-level filtering (preserving valid items from flagged orders) is outweighed by the correctness risk of showing inventory data from orders that haven't been verified.

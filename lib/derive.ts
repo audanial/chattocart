@@ -24,6 +24,7 @@ export interface TopItem {
 export function topItems(orders: Order[], limit: number = 5): TopItem[] {
   const tally = new Map<string, number>();
   for (const order of orders) {
+    if (order.needs_review) continue;
     for (const item of order.items) {
       tally.set(item.name, (tally.get(item.name) ?? 0) + item.quantity);
     }
